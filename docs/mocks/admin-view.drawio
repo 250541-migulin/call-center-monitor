@@ -1,0 +1,34 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.4">
+  <diagram name="Page-1" id="f1b7ffb7-ca1e-a977-7cf5-a751b3c06c05">
+    <mxGraphModel dx="570" dy="300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="826" pageHeight="1169" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-163" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Управление пользователями" vertex="1">
+          <mxGeometry height="30" width="220" x="300" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-164" parent="1" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;table border=&quot;1&quot; width=&quot;100%&quot; style=&quot;width: 100% ; height: 100% ; border-collapse: collapse&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;th&gt;Логин&lt;/th&gt;&lt;th&gt;Роль&lt;/th&gt;&lt;th&gt;Статус&lt;/th&gt;&lt;th&gt;Действия&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;ivanov&lt;/td&gt;&lt;td&gt;Оператор&lt;/td&gt;&lt;td&gt;Активен&lt;/td&gt;&lt;td&gt;[Отключить]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;petrov&lt;/td&gt;&lt;td&gt;Руководитель&lt;/td&gt;&lt;td&gt;Отключён&lt;/td&gt;&lt;td&gt;[Включить]&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" vertex="1">
+          <mxGeometry height="80" width="260" x="300" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-165" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Добавить пользователя" vertex="1">
+          <mxGeometry height="20" width="140" x="300" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-166" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Логин:" vertex="1">
+          <mxGeometry height="20" width="50" x="300" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-167" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="26" width="130" x="350" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-168" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Роль:" vertex="1">
+          <mxGeometry height="20" width="40" x="300" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-169" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.forms.comboBox;align=left;strokeColor=#999999;mainText=;fillColor=#ffffff;labelBackgroundColor=none;fontColor=#000000;buttonText=▼;buttonStyle=rect;buttonSpacing=2;spacingLeft=4;comboWidth=130;buttonWidth=18;" value="Оператор ▼" vertex="1">
+          <mxGeometry height="26" width="130" x="350" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-170" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.buttons.button;strokeColor=#666666;fontColor=#ffffff;mainText=;fillColor=#0080F0;buttonStyle=rect;spacingLeft=4;buttonText=;fontSize=17;fontStyle=0;resizeWidth=1;resizeHeight=1;labelBackgroundColor=none;" value="Добавить" vertex="1">
+          <mxGeometry height="30" width="100" x="360" y="300" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

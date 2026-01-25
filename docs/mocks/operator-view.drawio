@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.4">
+  <diagram name="Page-1" id="f1b7ffb7-ca1e-a977-7cf5-a751b3c06c05">
+    <mxGraphModel dx="570" dy="300" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="826" pageHeight="1169" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-110" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Система мониторинга ТП" vertex="1">
+          <mxGeometry height="30" width="220" x="300" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-111" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="+7 (999) 123-45-67" vertex="1">
+          <mxGeometry height="20" width="220" x="360" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-112" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Имя" vertex="1">
+          <mxGeometry height="20" width="60" x="300" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-113" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="26" width="200" x="360" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-114" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Организация" vertex="1">
+          <mxGeometry height="20" width="90" x="300" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-115" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="26" width="170" x="390" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-116" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Ресурс" vertex="1">
+          <mxGeometry height="20" width="60" x="300" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-117" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.forms.comboBox;align=left;strokeColor=#999999;mainText=;fillColor=#ffffff;labelBackgroundColor=none;fontColor=#000000;buttonText=▼;buttonStyle=rect;buttonSpacing=2;spacingLeft=4;comboWidth=130;buttonWidth=18;" value="portal.example.com" vertex="1">
+          <mxGeometry height="26" width="200" x="360" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-118" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Тема обращения" vertex="1">
+          <mxGeometry height="20" width="110" x="300" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-119" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.forms.comboBox;align=left;strokeColor=#999999;mainText=;fillColor=#ffffff;labelBackgroundColor=none;fontColor=#000000;buttonText=▼;buttonStyle=rect;buttonSpacing=2;spacingLeft=4;comboWidth=130;buttonWidth=18;" value="Ошибка входа" vertex="1">
+          <mxGeometry height="26" width="150" x="410" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-120" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Результат" vertex="1">
+          <mxGeometry height="20" width="70" x="300" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-121" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.forms.radioBox;strokeColor=#999999;fillColor=#ffffff;align=left;labelPosition=right;spacingLeft=4;mainText=;fontColor=#000000;labelBackgroundColor=none;" value="Решено" vertex="1">
+          <mxGeometry height="22" width="20" x="380" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-122" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.forms.radioBox;strokeColor=#999999;fillColor=#ffffff;align=left;labelPosition=right;spacingLeft=4;mainText=;fontColor=#000000;labelBackgroundColor=none;" value="Не решено" vertex="1">
+          <mxGeometry height="22" width="20" x="460" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-123" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="Комментарий" vertex="1">
+          <mxGeometry height="20" width="100" x="300" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-124" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="260" x="300" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-125" parent="1" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.buttons.button;strokeColor=#666666;fontColor=#ffffff;mainText=;fillColor=#0080F0;buttonStyle=rect;spacingLeft=4;buttonText=;fontSize=17;fontStyle=0;resizeWidth=1;resizeHeight=1;labelBackgroundColor=none;" value="Сохранить" vertex="1">
+          <mxGeometry height="30" width="100" x="360" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="8cy63iMHo4xeb_XhbpHH-126" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="телефон" vertex="1">
+          <mxGeometry height="20" width="60" x="300" y="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
