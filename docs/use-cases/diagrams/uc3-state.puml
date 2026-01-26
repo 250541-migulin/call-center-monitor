@@ -1,0 +1,17 @@
+@startuml
+[*] --> Idle
+Idle --> FormOpen : Звонок завершён
+FormOpen --> Validating : Нажата «Сохранить»
+Validating --> Saving : Данные валидны
+Saving --> Idle : Сохранено успешно
+Validating --> FormOpen : Ошибка валидации\n(показать подсказку)
+
+note right of FormOpen
+  Поля:
+  - Ресурс (обязательный)
+  - Тема (обязательный)
+  - Результат (обязательный)
+  - Комментарий (опционально)
+end note
+
+@enduml

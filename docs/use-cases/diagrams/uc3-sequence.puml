@@ -1,0 +1,21 @@
+@startuml
+actor Оператор as op
+participant "Web UI" as ui
+participant "CallLogService" as service
+participant "InteractionRepository" as repo
+participant "PostgreSQL" as db
+
+op -> ui : Открывает форму обращения
+ui -> service : loadClientData(clientId)
+service --> ui : Возвращает данные клиента
+
+op -> ui : Заполняет ресурс, тему, результат
+ui -> service : saveInteraction(interaction)
+service -> repo : save(interaction)
+repo -> db : INSERT INTO interaction
+db --> repo : OK
+repo --> service : saved
+service --> ui : Успех
+ui -> op : Показывает сообщение\n«Обращение сохранено»
+
+@enduml
