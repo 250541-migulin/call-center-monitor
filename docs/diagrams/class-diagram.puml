@@ -1,0 +1,102 @@
+@startuml
+' Style
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam wrapWidth 120
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor #666666
+}
+
+' === ENUMS ===
+enum Role {
+  OPERATOR
+  MANAGER
+  ADMIN
+}
+
+enum CallResult {
+  RESOLVED
+  UNRESOLVED
+}
+
+' === DOMAIN CLASSES ===
+
+class User {
+  + id
+  + login
+  + role
+  --
+  + {static} validateLogin(login)
+  + setPassword(password)
+}
+
+class Client {
+  + id
+  + phone
+  + name
+  + organization
+  --
+  + isComplete()
+  + updateFromForm(name, organization)
+}
+
+class Call {
+  + id
+  + clientId
+  + startTime
+  + duration
+  + answered
+  + isOutOfHours
+  --
+  + {static} isInWorkingHours(time, workingHours)
+}
+
+class Interaction {
+  + id
+  + callId
+  + operatorId
+  + resource
+  + topic
+  + result
+  + comment
+  --
+  + isValid()
+  + save()
+}
+
+class WorkingHours {
+  + id
+  + start
+  + end
+  --
+  + contains(time)
+}
+
+' === SERVICE CLASSES (from Sequence Diagrams) ===
+
+class AnalyticsService {
+  + getInteractionsByFilter(filter)
+  + getCallsOutOfHours(period)
+  + calculateOperatorStats(operator, period)
+}
+
+class ExportService {
+  + generateCsvReport(data, type)
+  + getFileName(type)
+}
+
+' === RELATIONSHIPS ===
+
+User "1" -- "0..*" Interaction : creates >
+Client "1" -- "0..*" Call : receives >
+Call "1" -- "0..1" Interaction : generates >
+Interaction --> User : handled by
+Call --> WorkingHours : validates against
+
+AnalyticsService ..> Call : uses
+AnalyticsService ..> Interaction : uses
+ExportService ..> AnalyticsService : depends on
+
+@enduml

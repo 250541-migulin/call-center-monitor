@@ -1,0 +1,34 @@
+@startuml
+' Настройки стиля
+skinparam node {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam artifact {
+  BackgroundColor LightYellow
+  BorderColor Black
+}
+
+node "Клиентское устройство" {
+  artifact "Веб-браузер" as browser
+}
+
+node "Сервер приложения" {
+  artifact "Фронтенд-приложение" as frontend
+  artifact "Бэкенд API" as backend
+}
+
+node "Сервер базы данных" {
+  artifact "PostgreSQL" as db
+}
+
+node "Сервер Asterisk" {
+  artifact "Asterisk PBX" as asterisk
+}
+
+' Связи
+browser --> frontend : HTTP/HTTPS
+frontend --> backend : REST-запросы
+backend --> db : SQL-запросы
+asterisk --> backend : События звонков\n(через Webhook или AMI)
+@enduml

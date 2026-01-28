@@ -1,0 +1,26 @@
+@startuml
+actor Оператор as op
+participant "Web UI" as ui
+participant "ClientCardService" as service
+participant "ClientRepository" as repo
+database "PostgreSQL" as db
+
+op -> ui : Открывает форму карточки\n(из UC3 или автоматически)
+ui -> service : loadClientByPhone(phone)
+service -> repo : findByPhone(phone)
+repo -> db : SELECT * FROM client WHERE phone = ?
+db --> repo : client data
+repo --> service : Client object
+service --> ui : Отобразить данные\n(телефон, имя=?, орг=?)
+
+op -> ui : Вводит Имя и Организацию
+op -> ui : Нажимает «Сохранить»
+ui -> service : updateClient(clientId, name, org)
+service -> repo : save(client)
+repo -> db : UPDATE client SET name=?, org=? WHERE id=?
+db --> repo : OK
+repo --> service : saved
+service --> ui : Показать «Карточка обновлена»
+ui -> op : Возврат к UC3
+
+@enduml

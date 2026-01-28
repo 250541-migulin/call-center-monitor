@@ -1,0 +1,27 @@
+@startuml
+actor "Оператор\nРуководитель\nАдминистратор" as user
+
+component "Фронтенд\n(Веб-интерфейс)" as frontend {
+  [Слой пользовательского интерфейса]
+}
+
+component "Бэкенд API\n(Сервисы приложения)" as backend {
+  [Сервис пользователей]
+  [Сервис обращений]
+  [Сервис аналитики]
+  [Сервис экспорта]
+}
+
+component "База данных\n(PostgreSQL)" as db {
+  [Таблицы: users, clients, calls, interactions]
+}
+
+component "Asterisk PBX\n(Телефония)" as asterisk {
+  [События завершения звонков]
+}
+
+user --> frontend : HTTP-запросы
+frontend --> backend : Вызовы REST API
+backend --> db : Запросы к БД
+asterisk --> backend : События через Webhook/AMI
+@enduml
