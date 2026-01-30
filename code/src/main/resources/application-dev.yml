@@ -1,0 +1,47 @@
+# ========================================
+# Конфигурация для разработки
+# ========================================
+
+# ========================================
+# H2 база данных (совместима с PostgreSQL)
+# ========================================
+spring:
+  datasource:
+    url: jdbc:h2:mem:callcenter;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# ========================================
+# Подробные логи для разработки
+# ========================================
+logging:
+  level:
+    root: INFO
+    local.nca.callcenter: DEBUG
+    org.springframework: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.asteriskjava: DEBUG
+
+# ========================================
+# Отладка
+# ========================================
+debug: true
