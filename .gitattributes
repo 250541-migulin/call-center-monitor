@@ -1,2 +1,24 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+# Автоматическое определение текст/бинарный + конвертация CRLF→LF при коммите
+* text=auto
+
+# Явное указание для специфичных файлов
+*.md    text
+*.conf  text
+*.yml   text
+*.yaml  text
+*.java  text
+*.sh    text eol=lf
+
+# Windows-специфичные файлы
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# Бинарные файлы
+*.png   binary
+*.jpg   binary
+*.gif   binary
+*.ico   binary
+*.zip   binary
+*.jar   binary
+*.exe   binary
+*.dll   binary
