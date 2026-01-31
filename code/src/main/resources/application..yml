@@ -1,0 +1,38 @@
+# ========================================
+# Основная конфигурация приложения
+# Лабораторная работа №5: Реализация учебного проекта
+# ========================================
+
+spring:
+  application:
+    name: call-center-monitor
+    version: 1.0.0
+
+# ========================================
+# Подключение к Asterisk AMI
+# Используем переменные окружения с безопасными дефолтами
+# ========================================
+asterisk:
+  ami:
+    host: ${ASTERISK_HOST:127.0.0.1}
+    port: ${ASTERISK_PORT:5038}
+    username: ${ASTERISK_USERNAME:monitor}
+    password: ${ASTERISK_PASSWORD:mysecret123}
+    queue-name: support
+
+# ========================================
+# Настройки веб-сервера
+# ========================================
+server:
+  port: ${SERVER_PORT:8080}
+
+# ========================================
+# Логирование — только в консоль
+# ========================================
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: INFO
+    local.nca.callcenter: DEBUG
+    org.asteriskjava: INFO

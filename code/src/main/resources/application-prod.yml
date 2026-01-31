@@ -27,25 +27,23 @@ spring:
           batch_size: 30
 
 # ========================================
-# Минимальные логи для продакшена
-# ========================================
-logging:
-  level:
-    root: WARN
-    local.nca.callcenter: INFO
-    org.springframework: WARN
-    org.hibernate: WARN
-    org.asteriskjava: INFO
-
-# ========================================
-# Оптимизация сервера
+# Настройки сервера
 # ========================================
 server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
     min-response-size: 1024
-  tomcat:
-    threads:
-      max: 200
-      min-spare: 10
+
+# ========================================
+# Минимальные логи
+# ========================================
+logging:
+  level:
+    local.nca.callcenter: INFO
+    org.asteriskjava: INFO
