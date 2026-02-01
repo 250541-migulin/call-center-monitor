@@ -1,0 +1,532 @@
+{
+  "info": {
+    "name": "Call Center Monitor API",
+    "description": "Коллекция для тестирования API системы мониторинга колл-центра с интеграцией Asterisk",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "testCallId",
+      "value": "test-call-001",
+      "type": "string"
+    },
+    {
+      "key": "testCallerId",
+      "value": "+79991234567",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📁 1. Вызовы (Calls)",
+      "item": [
+        {
+          "name": "GET Все вызовы в очереди",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls"]
+            },
+            "description": "Получить список всех вызовов в очереди (из памяти)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "console.log(\"Количество вызовов: \" + pm.response.json().length);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Вызов по ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/{{testCallId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "{{testCallId}}"]
+            },
+            "description": "Получить информацию о конкретном вызове по идентификатору"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response status is 200 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.test(\"Response has callId\", function () {",
+                  "        pm.expect(jsonData).to.have.property('callId');",
+                  "    });",
+                  "    pm.test(\"Response has callerId\", function () {",
+                  "        pm.expect(jsonData).to.have.property('callerId');",
+                  "    });",
+                  "}",
+                  "",
+                  "if (pm.response.code === 404) {",
+                  "    console.log(\"Вызов не найден\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Создать тестовый вызов",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\",\n  \"entryTime\": \"{{currentTimestamp}}\",\n  \"status\": \"WAITING\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/calls",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls"]
+            },
+            "description": "Создать тестовый вызов для проверки работы API (данные хранятся в памяти)"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Установить текущую временную метку",
+                  "var now = new Date();",
+                  "pm.environment.set(\"currentTimestamp\", now.toISOString());"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response has correct callId\", function () {",
+                  "    pm.expect(jsonData.callId).to.eql(pm.variables.get(\"testCallId\"));",
+                  "});",
+                  "",
+                  "pm.test(\"Response has status\", function () {",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});",
+                  "",
+                  "console.log(\"Тестовый вызов создан: \" + jsonData.callId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE Удалить вызов",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/{{testCallId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "{{testCallId}}"]
+            },
+            "description": "Удалить вызов из памяти (для очистки тестовых данных)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"Вызов удалён: \" + pm.variables.get(\"testCallId\"));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "API для управления и просмотра вызовов в очереди колл-центра"
+    },
+    {
+      "name": "📁 2. Health Check",
+      "item": [
+        {
+          "name": "GET Health Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Проверка общего состояния системы и подключения к Asterisk AMI"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response status is 200 or 503\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response has status field\", function () {",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has asteriskConnected field\", function () {",
+                  "    pm.expect(jsonData).to.have.property('asteriskConnected');",
+                  "});",
+                  "",
+                  "if (jsonData.asteriskConnected) {",
+                  "    console.log(\"✅ Asterisk AMI подключён\");",
+                  "} else {",
+                  "    console.log(\"❌ Asterisk AMI НЕ подключён\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Connection Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/health/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "details"]
+            },
+            "description": "Детальная информация о подключении к Asterisk AMI"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response has connected field\", function () {",
+                  "    pm.expect(jsonData).to.have.property('connected');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has connectionState field\", function () {",
+                  "    pm.expect(jsonData).to.have.property('connectionState');",
+                  "});",
+                  "",
+                  "console.log(\"Состояние подключения: \" + jsonData.connectionState);",
+                  "console.log(\"Хост: \" + jsonData.host + \":\" + jsonData.port);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Эндпоинты для проверки состояния системы и подключения к Asterisk"
+    },
+    {
+      "name": "📁 3. Интеграционные сценарии",
+      "item": [
+        {
+          "name": "Сценарий: Полный цикл тестового вызова",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log(\"Запуск интеграционного сценария...\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "item": [
+            {
+              "name": "Шаг 1: Создать тестовый вызов",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\",\n  \"entryTime\": \"{{currentTimestamp}}\",\n  \"status\": \"WAITING\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "var now = new Date();",
+                      "pm.environment.set(\"currentTimestamp\", now.toISOString());"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Шаг 1: Вызов создан\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var jsonData = pm.response.json();",
+                      "pm.environment.set(\"createdCallId\", jsonData.callId);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 2: Проверить список вызовов",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Шаг 2: Список вызовов получен\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var calls = pm.response.json();",
+                      "pm.test(\"В списке есть созданный вызов\", function () {",
+                      "    var createdCallId = pm.environment.get(\"createdCallId\");",
+                      "    var found = calls.some(call => call.callId === createdCallId);",
+                      "    pm.expect(found).to.be.true;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 3: Получить вызов по ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls/{{createdCallId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls", "{{createdCallId}}"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Шаг 3: Вызов получен по ID\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var call = pm.response.json();",
+                      "pm.test(\"Call ID совпадает\", function () {",
+                      "    pm.expect(call.callId).to.eql(pm.environment.get(\"createdCallId\"));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 4: Удалить вызов",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls/{{createdCallId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls", "{{createdCallId}}"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Шаг 4: Вызов удалён\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 5: Проверить, что вызов удалён",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls/{{createdCallId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls", "{{createdCallId}}"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Шаг 5: Вызов не найден (404)\", function () {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "console.log(\"\\n🎉 Интеграционный сценарий завершён успешно!\");"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Сценарий: Проверка состояния системы",
+          "item": [
+            {
+              "name": "Проверка общего состояния",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/health",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "health"]
+                }
+              }
+            },
+            {
+              "name": "Проверка деталей подключения",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/health/details",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "health", "details"]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Готовые сценарии для автоматического тестирования"
+    }
+  ]
+}

@@ -14,10 +14,10 @@ spring:
 # ========================================
 asterisk:
   ami:
-    host: ${ASTERISK_HOST:127.0.0.1}
-    port: ${ASTERISK_PORT:5038}
-    username: ${ASTERISK_USERNAME:monitor}
-    password: ${ASTERISK_PASSWORD:mysecret123}
+    host: 127.0.0.1
+    port: 5038
+    username: monitor
+    password: mysecret123
     queue-name: support
 
 # ========================================
