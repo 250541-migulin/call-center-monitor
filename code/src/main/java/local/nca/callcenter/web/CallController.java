@@ -1,7 +1,8 @@
 package local.nca.callcenter.web;
 
-import local.nca.callcenter.application.CallService; // ← Импорт сервиса
+import local.nca.callcenter.application.CallService;
 import local.nca.callcenter.domain.model.Call;
+import local.nca.callcenter.domain.model.Operator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +52,29 @@ public class CallController {
         callService.removeCall(callId);
         log.info("Удалён вызов: {}", callId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Получить всех операторов.
+     */
+    @GetMapping("/operators")
+    public ResponseEntity<List<Operator>> getAllOperators() {
+        List<Operator> operators = callService.getAllOperators();
+        log.info("Запрос всех операторов: {} шт.", operators.size());
+        return ResponseEntity.ok(operators);
+    }
+
+    /**
+     * Получить оператора по ID.
+     */
+    @GetMapping("/operators/{operatorId}")
+    public ResponseEntity<Operator> getOperatorById(@PathVariable String operatorId) {
+        Operator operator = callService.getOperatorById(operatorId);
+        if (operator == null) {
+            log.warn("Оператор не найден: {}", operatorId);
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Запрос оператора: {}", operatorId);
+        return ResponseEntity.ok(operator);
     }
 }

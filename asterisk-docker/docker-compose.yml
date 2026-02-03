@@ -3,10 +3,19 @@ services:
     image: andrius/asterisk:latest
     container_name: asterisk
     ports:
-      - "5060:5060/tcp"
-      - "5060:5060/udp"
+      - "5060:5060/udp"           # SIP
+      - "5038:5038/tcp"           # AMI
       - "10000-10100:10000-10100/udp"  # RTP для аудио
-      - "5038:5038"                    # AMI — ОБЯЗАТЕЛЬНО для мониторинга!
     volumes:
-      - ./asterisk-config:/etc/asterisk
+      - ./asterisk-config:/etc/asterisk  # ← Монтируем ВСЮ директорию
+      - ./asterisk-logs:/var/log/asterisk
+      - ./asterisk-sounds:/var/lib/asterisk/sounds
+    networks:
+      - callcenter-network
     restart: unless-stopped
+    # Для отладки: показывать логи в реальном времени
+    # command: ["asterisk", "-vvv", "-f"]
+
+networks:
+  callcenter-network:
+    driver: bridge

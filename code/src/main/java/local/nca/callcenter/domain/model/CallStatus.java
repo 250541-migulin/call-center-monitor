@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CallStatus {
     WAITING("В ожидании"),
+    RINGING("Звонит оператору"),
     IN_PROGRESS("В работе"),
     COMPLETED("Завершён"),
-    ABANDONED("Покинул очередь");
+    ABANDONED("Покинул очередь"),
+    MISSED("Пропущен оператором");
 
     private final String displayName;
 }

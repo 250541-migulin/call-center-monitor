@@ -40,7 +40,7 @@ public class AsteriskConnection {
             if (properties.isAutoReconnect()) {
                 log.warn("Авто-переподключение включено. Попытка переподключения через {} мс...",
                         properties.getReconnectInterval());
-                // В продакшене здесь был бы механизм переподключения
+                // TODO в идеале необходим механизм переподключения
             }
         }
     }

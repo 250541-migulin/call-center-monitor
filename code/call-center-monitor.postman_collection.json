@@ -19,6 +19,16 @@
       "key": "testCallerId",
       "value": "+79991234567",
       "type": "string"
+    },
+    {
+      "key": "operatorExtension",
+      "value": "1001",
+      "type": "string"
+    },
+    {
+      "key": "callerId",
+      "value": "Client #123",
+      "type": "string"
     }
   ],
   "item": [
@@ -197,7 +207,158 @@
       "description": "API для управления и просмотра вызовов в очереди колл-центра"
     },
     {
-      "name": "📁 2. Health Check",
+      "name": "📁 2. Операторы (Operators)",
+      "item": [
+        {
+          "name": "GET Все операторы",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/operators",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "operators"]
+            },
+            "description": "Получить список всех операторов колл-центра"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response is array\", function () {",
+                  "    pm.expect(jsonData).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "console.log(\"Количество операторов: \" + jsonData.length);",
+                  "jsonData.forEach(function(op) {",
+                  "    console.log(\"  - \" + op.name + \" (\" + op.extension + \"): \" + op.status);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Оператор по ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/operators/operator1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "operators", "operator1"]
+            },
+            "description": "Получить информацию об операторе по идентификатору"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response status is 200 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.test(\"Response has id\", function () {",
+                  "        pm.expect(jsonData).to.have.property('id');",
+                  "    });",
+                  "    pm.test(\"Response has extension\", function () {",
+                  "        pm.expect(jsonData).to.have.property('extension');",
+                  "    });",
+                  "    pm.test(\"Response has name\", function () {",
+                  "        pm.expect(jsonData).to.have.property('name');",
+                  "    });",
+                  "    console.log(\"Оператор: \" + jsonData.name + \" (\" + jsonData.extension + \")\");",
+                  "}",
+                  "",
+                  "if (pm.response.code === 404) {",
+                  "    console.log(\"Оператор не найден\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "API для управления и просмотра операторов колл-центра"
+    },
+    {
+      "name": "📁 3. Инициация вызовов",
+      "item": [
+        {
+          "name": "POST Инициировать вызов на оператора",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"extension\": \"{{operatorExtension}}\",\n  \"callerId\": \"{{callerId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/originate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "originate"]
+            },
+            "description": "Инициировать исходящий вызов на оператора через Asterisk AMI"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 400\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response has status\", function () {",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});",
+                  "",
+                  "if (jsonData.status === 'success') {",
+                  "    pm.test(\"✅ Вызов успешно инициирован\", function () {",
+                  "        pm.expect(jsonData.message).to.include(pm.variables.get(\"operatorExtension\"));",
+                  "    });",
+                  "    console.log('✅ ' + jsonData.message);",
+                  "} else {",
+                  "    console.log('❌ Ошибка: ' + jsonData.message);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "API для инициации исходящих вызовов на операторов"
+    },
+    {
+      "name": "📁 4. Health Check",
       "item": [
         {
           "name": "GET Health Status",
@@ -292,7 +453,7 @@
       "description": "Эндпоинты для проверки состояния системы и подключения к Asterisk"
     },
     {
-      "name": "📁 3. Интеграционные сценарии",
+      "name": "📁 5. Интеграционные сценарии",
       "item": [
         {
           "name": "Сценарий: Полный цикл тестового вызова",
@@ -524,6 +685,140 @@
               }
             }
           ]
+        },
+        {
+          "name": "Сценарий: Инициация вызова на оператора",
+          "item": [
+            {
+              "name": "Шаг 1: Проверить операторов",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls/operators",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls", "operators"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Список операторов получен\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var operators = pm.response.json();",
+                      "var targetOp = operators.find(op => op.extension === pm.variables.get(\"operatorExtension\"));",
+                      "",
+                      "pm.test(\"Оператор \" + pm.variables.get(\"operatorExtension\") + \" существует\", function () {",
+                      "    pm.expect(targetOp).to.not.be.undefined;",
+                      "});",
+                      "",
+                      "if (targetOp) {",
+                      "    pm.test(\"Оператор доступен\", function () {",
+                      "        pm.expect(targetOp.status).to.eql(\"AVAILABLE\");",
+                      "    });",
+                      "    console.log(\"Оператор \" + targetOp.name + \" готов к вызову\");",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 2: Инициировать вызов",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"extension\": \"{{operatorExtension}}\",\n  \"callerId\": \"{{callerId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls/originate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls", "originate"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Ответ получен\", function () {",
+                      "    pm.response.to.be.ok;",
+                      "});",
+                      "",
+                      "var jsonData = pm.response.json();",
+                      "",
+                      "if (jsonData.status === 'success') {",
+                      "    pm.test(\"✅ Вызов инициирован\", function () {",
+                      "        pm.expect(jsonData.message).to.include(pm.variables.get(\"operatorExtension\"));",
+                      "    });",
+                      "    console.log(\"📞 \" + jsonData.message);",
+                      "} else {",
+                      "    console.log(\"❌ \" + jsonData.message);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Шаг 3: Проверить вызовы в системе",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/calls",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "calls"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"✅ Список вызовов получен\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var calls = pm.response.json();",
+                      "console.log(\"Текущие вызовы в системе: \" + calls.length);",
+                      "",
+                      "if (calls.length > 0) {",
+                      "    calls.forEach(function(call) {",
+                      "        console.log(\"  - \" + call.callId + \": \" + call.status + \" (\" + call.waitingTimeSeconds + \" сек)\");",
+                      "    });",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            }
+          ],
+          "description": "Сценарий для демонстрации инициации вызова из приложения на оператора"
         }
       ],
       "description": "Готовые сценарии для автоматического тестирования"
