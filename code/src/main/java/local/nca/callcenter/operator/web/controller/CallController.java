@@ -1,8 +1,8 @@
 package local.nca.callcenter.web;
 
-import local.nca.callcenter.application.CallService;
-import local.nca.callcenter.domain.model.Call;
-import local.nca.callcenter.domain.model.Operator;
+import local.nca.callcenter.operator.application.CallService;
+import local.nca.callcenter.operator.domain.model.Call;
+import local.nca.callcenter.operator.domain.model.Operator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

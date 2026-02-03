@@ -1,6 +1,6 @@
-package local.nca.callcenter.web;
+package local.nca.callcenter.unknown.web;
 
-import local.nca.callcenter.infrastructure.asterisk.AsteriskConnection;
+import local.nca.callcenter.asterisk.infrastructure.AsteriskConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
