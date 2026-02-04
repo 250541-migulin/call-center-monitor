@@ -1,6 +1,6 @@
-package local.nca.callcenter.infrastructure.asterisk;
+package local.nca.callcenter.asterisk.infrastructure;
 
-import local.nca.callcenter.config.AsteriskProperties;
+import local.nca.callcenter.asterisk.config.AsteriskProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

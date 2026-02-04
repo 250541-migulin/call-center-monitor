@@ -130,27 +130,16 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\",\n  \"entryTime\": \"{{currentTimestamp}}\",\n  \"status\": \"WAITING\"\n}"
+              "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/calls",
               "host": ["{{baseUrl}}"],
               "path": ["api", "calls"]
             },
-            "description": "Создать тестовый вызов для проверки работы API (данные хранятся в памяти)"
+            "description": "Создать тестовый вызов (entryTime устанавливается автоматически)"
           },
           "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "// Установить текущую временную метку",
-                  "var now = new Date();",
-                  "pm.environment.set(\"currentTimestamp\", now.toISOString());"
-                ],
-                "type": "text/javascript"
-              }
-            },
             {
               "listen": "test",
               "script": {
@@ -164,8 +153,8 @@
                   "    pm.expect(jsonData.callId).to.eql(pm.variables.get(\"testCallId\"));",
                   "});",
                   "",
-                  "pm.test(\"Response has status\", function () {",
-                  "    pm.expect(jsonData).to.have.property('status');",
+                  "pm.test(\"Response has entryTime\", function () {",
+                  "    pm.expect(jsonData).to.have.property('entryTime');",
                   "});",
                   "",
                   "console.log(\"Тестовый вызов создан: \" + jsonData.callId);"
@@ -353,6 +342,48 @@
               }
             }
           ]
+        },
+        {
+          "name": "GET Asterisk Health (from OriginateController)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "health"]
+            },
+            "description": "Проверка подключения к Asterisk через OriginateController"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.test(\"Response has connected field\", function () {",
+                  "    pm.expect(jsonData).to.have.property('connected');",
+                  "});",
+                  "",
+                  "if (jsonData.connected) {",
+                  "    console.log(\"✅ Asterisk подключён\");",
+                  "} else {",
+                  "    console.log(\"❌ Asterisk НЕ подключён\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ],
       "description": "API для инициации исходящих вызовов на операторов"
@@ -481,7 +512,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\",\n  \"entryTime\": \"{{currentTimestamp}}\",\n  \"status\": \"WAITING\"\n}"
+                  "raw": "{\n  \"callId\": \"{{testCallId}}\",\n  \"callerId\": \"{{testCallerId}}\",\n  \"queueName\": \"support\"\n}"
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/calls",
@@ -491,16 +522,6 @@
               },
               "event": [
                 {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "var now = new Date();",
-                      "pm.environment.set(\"currentTimestamp\", now.toISOString());"
-                    ],
-                    "type": "text/javascript"
-                  }
-                },
-                {
                   "listen": "test",
                   "script": {
                     "exec": [
@@ -509,7 +530,8 @@
                       "});",
                       "",
                       "var jsonData = pm.response.json();",
-                      "pm.environment.set(\"createdCallId\", jsonData.callId);"
+                      "pm.environment.set(\"createdCallId\", jsonData.callId);",
+                      "console.log(\"Создан вызов: \" + jsonData.callId);"
                     ],
                     "type": "text/javascript"
                   }

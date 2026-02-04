@@ -1,26 +1,27 @@
-package local.nca.callcenter.infrastructure.asterisk;
+// asterisk/infrastructure/AsteriskEventObserver.java
+package local.nca.callcenter.asterisk.infrastructure;
 
-import local.nca.callcenter.config.AsteriskProperties;
-import local.nca.callcenter.domain.model.Call;
-import local.nca.callcenter.domain.service.CallEventListener;
+import local.nca.callcenter.asterisk.application.port.QueueEventPort;
+import local.nca.callcenter.asterisk.config.AsteriskProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.asteriskjava.manager.ManagerConnection;
 import org.asteriskjava.manager.event.LeaveEvent;
 import org.asteriskjava.manager.event.QueueEntryEvent;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Обработчик событий Asterisk AMI.
- * Реализует паттерн Observer для получения событий очереди в реальном времени.
+ *
+ * Слушает события очереди и уведомляет бизнес через порт QueueEventPort.
+ * НЕ зависит от доменных моделей — передаёт только примитивы.
  */
 @Slf4j
 @Component
 public class AsteriskEventObserver {
 
-    private final CopyOnWriteArrayList<CallEventListener> listeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<QueueEventPort> listeners = new CopyOnWriteArrayList<>();
     private final String queueName;
 
     public AsteriskEventObserver(AsteriskProperties properties) {
@@ -30,7 +31,6 @@ public class AsteriskEventObserver {
 
     /**
      * Регистрирует слушателей событий на соединении Asterisk AMI.
-     * @param connection соединение с сервером Asterisk
      */
     public void registerListeners(ManagerConnection connection) {
         if (connection == null) {
@@ -40,32 +40,34 @@ public class AsteriskEventObserver {
 
         log.info("Регистрация слушателей событий для очереди '{}'", queueName);
 
+        // Слушатель события: новый вызов в очереди
         connection.addEventListener(event -> {
             if (event instanceof QueueEntryEvent queueEvent &&
                     queueName.equals(queueEvent.getQueue())) {
 
-                Call call = new Call(
-                        queueEvent.getUniqueId(),
-                        queueEvent.getCallerIdNum(),
-                        queueEvent.getQueue(),
-                        LocalDateTime.now()
-                );
-
-                log.info("Новый вызов в очереди '{}' (Caller: {})",
+                log.info("📞 Новый вызов в очереди '{}' от {}",
                         queueEvent.getQueue(),
                         queueEvent.getCallerIdNum());
 
-                notifyCallEntered(call);
+                // Передаём только примитивы, не создаём доменную модель!
+                notifyCallEntered(
+                        queueEvent.getUniqueId(),
+                        queueEvent.getCallerIdNum(),
+                        queueEvent.getQueue()
+                );
             }
         });
 
+        // Слушатель события: вызов покинул очередь
         connection.addEventListener(event -> {
             if (event instanceof LeaveEvent leaveEvent &&
                     queueName.equals(leaveEvent.getQueue())) {
 
-                String callId = leaveEvent.getUniqueId();
-                log.info("Вызов покинул очередь '{}': {}", leaveEvent.getQueue(), callId);
-                notifyCallLeft(callId);
+                log.info("✅ Вызов покинул очередь '{}': {}",
+                        leaveEvent.getQueue(),
+                        leaveEvent.getUniqueId());
+
+                notifyCallLeft(leaveEvent.getUniqueId());
             }
         });
 
@@ -73,10 +75,9 @@ public class AsteriskEventObserver {
     }
 
     /**
-     * Добавляет слушателя событий.
-     * @param listener слушатель событий вызовов
+     * Добавить слушателя порта.
      */
-    public void addListener(CallEventListener listener) {
+    public void addListener(QueueEventPort listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
             log.debug("Добавлен слушатель: {}", listener.getClass().getSimpleName());
@@ -84,22 +85,20 @@ public class AsteriskEventObserver {
     }
 
     /**
-     * Удаляет слушателя событий.
-     * @param listener слушатель событий вызовов
+     * Удалить слушателя порта.
      */
-    public void removeListener(CallEventListener listener) {
+    public void removeListener(QueueEventPort listener) {
         listeners.remove(listener);
         log.debug("Удалён слушатель: {}", listener.getClass().getSimpleName());
     }
 
     /**
-     * Уведомляет всех зарегистрированных слушателей о новом вызове в очереди.
-     * @param call объект вызова
+     * Уведомить слушателей о новом вызове.
      */
-    private void notifyCallEntered(Call call) {
-        for (CallEventListener listener : listeners) {
+    private void notifyCallEntered(String uniqueId, String callerId, String queueName) {
+        for (QueueEventPort listener : listeners) {
             try {
-                listener.onCallEntered(call);
+                listener.onCallEntered(uniqueId, callerId, queueName);
             } catch (Exception e) {
                 log.error("Ошибка при уведомлении слушателя {}: {}",
                         listener.getClass().getSimpleName(), e.getMessage());
@@ -108,13 +107,12 @@ public class AsteriskEventObserver {
     }
 
     /**
-     * Уведомляет всех зарегистрированных слушателей о выходе вызова из очереди.
-     * @param callId идентификатор вызова
+     * Уведомить слушателей о выходе вызова из очереди.
      */
-    private void notifyCallLeft(String callId) {
-        for (CallEventListener listener : listeners) {
+    private void notifyCallLeft(String uniqueId) {
+        for (QueueEventPort listener : listeners) {
             try {
-                listener.onCallLeft(callId);
+                listener.onCallLeft(uniqueId);
             } catch (Exception e) {
                 log.error("Ошибка при уведомлении слушателя {}: {}",
                         listener.getClass().getSimpleName(), e.getMessage());

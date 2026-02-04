@@ -1,5 +1,7 @@
-package local.nca.callcenter.unknown.web;
+package local.nca.callcenter.admin.web.controller;
 
+import local.nca.callcenter.admin.web.dto.ConnectionDetails;
+import local.nca.callcenter.admin.web.dto.HealthStatus;
 import local.nca.callcenter.asterisk.infrastructure.AsteriskConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,7 @@ public class HealthCheckController {
                 asteriskConnected
         );
 
-        log.info("Проверка состояния системы: {}", status.status);
+        log.info("Проверка состояния системы: {}", status.status());
 
         if (!asteriskConnected) {
             log.warn("Asterisk AMI не подключён! Проверьте настройки подключения.");
@@ -65,23 +67,4 @@ public class HealthCheckController {
 
         return ResponseEntity.ok(details);
     }
-
-    /**
-     * DTO для общего состояния системы.
-     */
-    public record HealthStatus(
-            String status,
-            String message,
-            boolean asteriskConnected
-    ) {}
-
-    /**
-     * DTO для детальной информации о подключении.
-     */
-    public record ConnectionDetails(
-            boolean connected,
-            String connectionState,
-            String host,
-            int port
-    ) {}
 }

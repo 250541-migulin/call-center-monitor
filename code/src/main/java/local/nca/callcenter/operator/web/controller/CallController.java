@@ -1,4 +1,4 @@
-package local.nca.callcenter.web;
+package local.nca.callcenter.operator.web.controller;
 
 import local.nca.callcenter.operator.application.CallService;
 import local.nca.callcenter.operator.domain.model.Call;

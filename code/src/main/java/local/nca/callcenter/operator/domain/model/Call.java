@@ -1,4 +1,4 @@
-package local.nca.callcenter.domain.model;
+package local.nca.callcenter.operator.domain.model;
 
 import lombok.*;
 
@@ -17,7 +17,6 @@ public class Call {
 
     private final String callId;
     private final String callerId;
-    private final String queueName;
     private final LocalDateTime entryTime;
     private CallStatus status = CallStatus.WAITING;;
 

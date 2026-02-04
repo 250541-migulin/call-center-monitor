@@ -1,4 +1,11 @@
 package local.nca.callcenter.admin.web.dto;
 
-public class ConnectionDetails {
-}
+/**
+ * DTO для детальной информации о подключении.
+ */
+public record ConnectionDetails(
+        boolean connected,
+        String connectionState,
+        String host,
+        int port
+) {}

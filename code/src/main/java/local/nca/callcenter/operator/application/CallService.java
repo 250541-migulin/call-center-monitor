@@ -1,29 +1,29 @@
-package local.nca.callcenter.application;
+package local.nca.callcenter.operator.application;
 
-import local.nca.callcenter.domain.model.Call;
-import local.nca.callcenter.domain.model.CallStatus;
-import local.nca.callcenter.domain.model.Operator;
-import local.nca.callcenter.domain.service.CallEventListener;
-import local.nca.callcenter.domain.service.CallStatusListener;
+import local.nca.callcenter.asterisk.application.port.QueueEventPort;
+import local.nca.callcenter.operator.domain.model.Call;
+import local.nca.callcenter.operator.domain.model.CallStatus;
+import local.nca.callcenter.operator.domain.model.Operator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Сервис управления вызовами.
- * Реализует паттерн Observer для реакции на события Asterisk.
- * Отвечает за хранение состояния вызовов (пока в памяти).
+ * Сервис управления вызовами оператора.
+ *
+ * Реализует порт QueueEventPort для получения событий от Asterisk.
+ * Владеет доменной моделью Call — создаёт и управляет вызовами.
  */
 @Slf4j
 @Service
-public class CallService implements CallEventListener {
+public class CallService implements QueueEventPort {
 
     private final ConcurrentHashMap<String, Call> calls = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Operator> operators = new ConcurrentHashMap<>();
-    private final List<CallStatusListener> statusListeners = new ArrayList<>();
 
     // Инициализация операторов при старте
     {
@@ -46,21 +46,28 @@ public class CallService implements CallEventListener {
         log.info("Инициализированы {} операторов", operators.size());
     }
 
+    // ==================== Реализация порта QueueEventPort ====================
+
     @Override
-    public void onCallEntered(Call call) {
+    public void onCallEntered(String uniqueId, String callerId, String queueName) {
+        // Создаём доменную модель Call из примитивов
+        Call call = new Call(uniqueId, callerId, LocalDateTime.now());
         calls.put(call.getCallId(), call);
-        log.info("✅ Вызов добавлен из Asterisk: {} (Caller: {}, Очередь: {})",
-                call.getCallId(), call.getCallerId(), call.getQueueName());
+
+        log.info("✅ Новый вызов: {} от {} в очереди {}",
+                uniqueId, callerId, queueName);
     }
 
     @Override
-    public void onCallLeft(String callId) {
-        Call removed = calls.remove(callId);
+    public void onCallLeft(String uniqueId) {
+        Call removed = calls.remove(uniqueId);
         if (removed != null) {
-            log.info("✅ Вызов удалён из Asterisk: {} (пробывал в очереди {} сек)",
-                    callId, removed.getWaitingTimeSeconds());
+            log.info("✅ Вызов {} покинул очередь (ожидал {} сек)",
+                    uniqueId, removed.getWaitingTimeSeconds());
         }
     }
+
+    // ==================== Бизнес-методы ====================
 
     /**
      * Обновить статус вызова.
@@ -70,9 +77,8 @@ public class CallService implements CallEventListener {
         if (call != null) {
             CallStatus oldStatus = call.getStatus();
             call.setStatus(newStatus);
-
-            notifyStatusChange(call, oldStatus, newStatus);
-            log.info("🔄 Статус вызова {} изменён: {} → {}", callId, oldStatus, newStatus);
+            log.info("🔄 Статус вызова {} изменён: {} → {}",
+                    callId, oldStatus, newStatus);
         }
     }
 
@@ -88,20 +94,7 @@ public class CallService implements CallEventListener {
         }
     }
 
-    /**
-     * Уведомить слушателей о смене статуса.
-     */
-    private void notifyStatusChange(Call call, CallStatus oldStatus, CallStatus newStatus) {
-        for (CallStatusListener listener : statusListeners) {
-            try {
-                listener.onCallStatusChanged(call, oldStatus, newStatus);
-            } catch (Exception e) {
-                log.error("Ошибка при уведомлении слушателя: {}", e.getMessage());
-            }
-        }
-    }
-
-    // ================= Методы для контроллера =================
+    // ==================== Методы для контроллера ====================
 
     public List<Call> getAllCalls() {
         return new ArrayList<>(calls.values());
@@ -127,10 +120,5 @@ public class CallService implements CallEventListener {
 
     public Operator getOperatorById(String operatorId) {
         return operators.get(operatorId);
-    }
-
-    public void addStatusListener(CallStatusListener listener) {
-        statusListeners.add(listener);
-        log.debug("Добавлен слушатель статусов: {}", listener.getClass().getSimpleName());
     }
 }

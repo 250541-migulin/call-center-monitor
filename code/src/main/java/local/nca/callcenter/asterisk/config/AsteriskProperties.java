@@ -1,4 +1,4 @@
-package local.nca.callcenter.config;
+package local.nca.callcenter.asterisk.config;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

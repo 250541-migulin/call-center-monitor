@@ -1,4 +1,4 @@
-package local.nca.callcenter.domain.model;
+package local.nca.callcenter.operator.domain.model;
 
 import lombok.*;
 
