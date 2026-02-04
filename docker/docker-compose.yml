@@ -1,0 +1,41 @@
+services:
+  asterisk:
+    image: andrius/asterisk:latest
+    container_name: asterisk
+    ports:
+      - "5060:5060/tcp"
+      - "5060:5060/udp"
+      - "5038:5038/tcp"
+      - "10000-10100:10000-10100/udp"
+    volumes:
+      - ./asterisk/asterisk-config:/etc/asterisk
+      - ./asterisk/asterisk-logs:/var/log/asterisk
+      - ./asterisk/asterisk-sounds:/var/lib/asterisk/sounds
+    networks:
+      - callcenter-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "asterisk", "-rx", "core show uptime"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  sipp:
+    image: ctaloi/sipp:latest
+    container_name: sipp
+    networks:
+      - callcenter-net
+    volumes:
+      - ./sipp/scenarios:/scenarios
+      - ./sipp/logs:/logs   
+    depends_on:
+      asterisk:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["tail", "-f", "/dev/null"]
+    stdin_open: true
+    tty: true
+
+networks:
+  callcenter-net:
+    driver: bridge

@@ -49,7 +49,7 @@ public class OriginateService {
             ManagerConnection connection = asteriskConnection.getConnection();
 
             // Формируем номер в формате SIP/1001
-            String channel = "SIP/" + extension;
+            String channel = "PJSIP/" + extension;
 
             OriginateAction originateAction = new OriginateAction();
             originateAction.setChannel(channel);
