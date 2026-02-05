@@ -6,6 +6,12 @@ target/
 
 code/logs/
 
+# Логи SIPp
+sipp/logs/
+
+# Логи Asterisk
+asterisk-logs/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
