@@ -1,6 +1,5 @@
 package local.nca.callcenter.operator.application;
 
-import local.nca.callcenter.asterisk.application.port.QueueEventPort;
 import local.nca.callcenter.operator.domain.model.Call;
 import local.nca.callcenter.operator.domain.model.CallStatus;
 import local.nca.callcenter.operator.domain.model.Operator;
@@ -20,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-public class CallService implements QueueEventPort {
+public class CallService {
 
     private final ConcurrentHashMap<String, Call> calls = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Operator> operators = new ConcurrentHashMap<>();
@@ -48,7 +47,6 @@ public class CallService implements QueueEventPort {
 
     // ==================== Реализация порта QueueEventPort ====================
 
-    @Override
     public void onCallEntered(String uniqueId, String callerId, String queueName) {
         // Создаём доменную модель Call из примитивов
         Call call = new Call(uniqueId, callerId, LocalDateTime.now());
@@ -58,7 +56,6 @@ public class CallService implements QueueEventPort {
                 uniqueId, callerId, queueName);
     }
 
-    @Override
     public void onCallLeft(String uniqueId) {
         Call removed = calls.remove(uniqueId);
         if (removed != null) {

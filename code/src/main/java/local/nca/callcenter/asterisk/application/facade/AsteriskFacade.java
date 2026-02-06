@@ -1,9 +1,7 @@
 package local.nca.callcenter.asterisk.application.facade;
 
-import local.nca.callcenter.asterisk.application.port.QueueEventPort;
-import local.nca.callcenter.asterisk.config.AsteriskProperties;
 import local.nca.callcenter.asterisk.infrastructure.AsteriskConnection;
-import local.nca.callcenter.asterisk.infrastructure.AsteriskEventObserver;
+import local.nca.callcenter.asterisk.infrastructure.AsteriskEventDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,9 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AsteriskFacade {
-    private AsteriskConnection connection;
-    private AsteriskEventObserver eventObserver;
-    private AsteriskProperties properties;
+    private final AsteriskConnection connection;
+    private final AsteriskEventDispatcher dispatcher;
 
     /**
      * Запустить мониторинг очереди.
@@ -28,22 +25,6 @@ public class AsteriskFacade {
             connection.connect();
         }
 
-        eventObserver.registerListeners(connection.getManagerConnection());
-    }
-
-    /**
-     * Добавить слушателя событий очереди.
-     * Слушатель получает ТОЛЬКО примитивы через порт QueueEventPort.
-     */
-    public void addQueueEventListener(QueueEventPort listener) {
-        eventObserver.addListener(listener);
-        log.debug("Добавлен слушатель событий: {}", listener.getClass().getSimpleName());
-    }
-
-    /**
-     * Проверить подключение к Asterisk.
-     */
-    public boolean isConnected() {
-        return connection.isConnected();
+        dispatcher.startDispatching(connection.getManagerConnection());
     }
 }
