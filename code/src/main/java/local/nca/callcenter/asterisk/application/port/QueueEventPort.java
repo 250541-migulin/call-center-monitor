@@ -2,7 +2,6 @@ package local.nca.callcenter.asterisk.application.port;
 
 /**
  * ВХОДЯЩИЙ ПОРТ: События из очереди Asterisk.
- * Принимает ТОЛЬКО примитивы — никаких доменных моделей!
  */
 public interface QueueEventPort {
 

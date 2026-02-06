@@ -63,8 +63,6 @@ public class HealthCheckController {
 
         log.debug("Детали подключения к Asterisk: {}", details);
 
-        asteriskConnection.getProperties().logConfiguration();
-
         return ResponseEntity.ok(details);
     }
 }

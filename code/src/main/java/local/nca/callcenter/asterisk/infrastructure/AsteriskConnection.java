@@ -1,21 +1,19 @@
 package local.nca.callcenter.asterisk.infrastructure;
 
-import local.nca.callcenter.asterisk.config.AsteriskProperties;
+import local.nca.callcenter.asterisk.exception.AsteriskError;
+import local.nca.callcenter.asterisk.exception.AsteriskException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.asteriskjava.manager.ManagerConnection;
-import org.asteriskjava.manager.ManagerConnectionFactory;
-import org.asteriskjava.manager.ManagerConnectionState;
+import org.asteriskjava.manager.*;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+
+import java.io.IOException;
 
 /**
  * Компонент управления соединением с сервером Asterisk AMI.
- * Отвечает ТОЛЬКО за жизненный цикл соединения (паттерн: Connection Pool).
- * Конфигурация инжектится через отдельный компонент AsteriskProperties.
  */
 @Slf4j
 @Component
@@ -23,71 +21,62 @@ import jakarta.annotation.PreDestroy;
 @RequiredArgsConstructor
 public class AsteriskConnection {
 
-    private final AsteriskProperties properties;
-    private ManagerConnection connection;
-    private boolean connected = false;
+    private final ManagerConnectionFactory managerConnectionFactory;
 
+    private ManagerConnection managerConnection;
 
-    @PostConstruct
-    public void init() {
-        log.info("Инициализация соединения с Asterisk AMI (хост: {}, порт: {})",
-                properties.getHost(), properties.getPort());
+    /**
+     * Подключение к asterisk AMI
+     */
+    public void connect() {
+        if (managerConnection != null) {
+            disconnect();
+        }
 
         try {
-            connect();
-        } catch (Exception e) {
-            log.error("Не удалось установить соединение с Asterisk AMI: {}", e.getMessage());
-            if (properties.isAutoReconnect()) {
-                log.warn("Авто-переподключение включено. Попытка переподключения через {} мс...",
-                        properties.getReconnectInterval());
-                // TODO в идеале необходим механизм переподключения
-            }
+            managerConnection = managerConnectionFactory.createManagerConnection();
+            managerConnection.login();
+
+        } catch (IOException e) {
+            throw new AsteriskException(AsteriskError.AST_NETWORK_PROBLEMS, e);
+        } catch (AuthenticationFailedException e) {
+            throw new AsteriskException(AsteriskError.AST_AUTH_FAILED, e);
+        } catch (TimeoutException e) {
+            throw new AsteriskException(AsteriskError.AST_CONN_TIMEOUT, e);
         }
     }
 
-    public void connect() throws Exception {
-        log.info("Подключение к Asterisk AMI: {}:{}...", properties.getHost(), properties.getPort());
-
-        try {
-            ManagerConnectionFactory factory = new ManagerConnectionFactory(
-                    properties.getHost(),
-                    properties.getPort(),
-                    properties.getUsername(),
-                    properties.getPassword()
-            );
-
-            connection = factory.createManagerConnection();
-            connection.login();
-
-            if (connection.getState() == ManagerConnectionState.CONNECTED) {
-                connected = true;
-                log.info("Соединение с Asterisk AMI установлено: {}:{}",
-                        properties.getHost(), properties.getPort());
-            } else {
-                throw new IllegalStateException("Подключение не удалось. Статус: " + connection.getState());
-            }
-        } catch (Exception e) {
-            log.error("Ошибка подключения к Asterisk: {}", e.getMessage());
-            throw e;
-        }
-    }
-
+    /**
+     * Подключены к asterisk
+     * @return
+     */
     public boolean isConnected() {
-        return connected && connection != null &&
-                connection.getState() == ManagerConnectionState.CONNECTED;
+        return managerConnection != null &&
+                managerConnection.getState() == ManagerConnectionState.CONNECTED;
+    }
+
+    /**
+     * Подключение есть, но оно не стабильно
+     * @return
+     */
+    public boolean isNotStableConnection() {
+        return managerConnection != null && managerConnection.getState() != ManagerConnectionState.CONNECTED;
     }
 
     @PreDestroy
     public void disconnect() {
-        if (isConnected()) {
-            try {
-                connection.logoff();
-                log.info("Соединение с Asterisk AMI закрыто");
-            } catch (Exception e) {
-                log.warn("Ошибка при закрытии соединения: {}", e.getMessage());
-            }
+        if (managerConnection == null) {
+            log.debug("Нет активного соединения для закрытия");
+            return;
         }
-        connection = null;
-        connected = false;
+
+        try {
+            managerConnection.logoff();
+            log.info("Соединение с Asterisk AMI закрыто");
+        } catch (Exception e) {
+            log.warn("Ошибка при закрытии соединения (игнорируем)", e);
+        } finally {
+            managerConnection = null;
+        }
     }
 }

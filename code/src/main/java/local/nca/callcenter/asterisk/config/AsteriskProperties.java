@@ -4,25 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * Конфигурационные свойства для подключения к Asterisk AMI.
- * Использует префикс "asterisk.ami" для всех свойств.
- * <p>
- * Пример использования в application.properties:
- * asterisk.ami.host=localhost
- * asterisk.ami.port=5038
- * asterisk.ami.username=admin
- * asterisk.ami.password=secret
- * asterisk.ami.queue-name=support
  */
-@Slf4j
 @Data
-@Component
 @ConfigurationProperties(prefix = "asterisk.ami")
 @Validated
 public class AsteriskProperties {
@@ -82,18 +70,4 @@ public class AsteriskProperties {
      */
     @Positive(message = "Интервал переподключения должен быть положительным")
     private Integer reconnectInterval = 10000;
-
-    /**
-     * Логирование конфигурации при инициализации (без пароля).
-     */
-    public void logConfiguration() {
-        log.info("Конфигурация Asterisk AMI загружена:");
-        log.info("  Хост: {}", host);
-        log.info("  Порт: {}", port);
-        log.info("  Пользователь: {}", username);
-        log.info("  Очередь: {}", queueName);
-        log.info("  Таймаут подключения: {} мс", connectionTimeout);
-        log.info("  Автопереподключение: {}", autoReconnect);
-        log.info("  Интервал переподключения: {} мс", reconnectInterval);
-    }
 }
